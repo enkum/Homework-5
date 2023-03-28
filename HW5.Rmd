@@ -1,0 +1,136 @@
+---
+title: "HW5 : Distribution"
+author:
+- Ebenezer Nkum^[enkum@miners.utep.edu]
+- University of Texas at El Paso (UTEP)
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+output:
+  pdf_document:
+    keep_tex: yes
+    fig_caption: yes
+    latex_engine: pdflatex
+    number_sections: yes
+    toc: yes
+    toc_depth: 4
+  html_document:
+    toc: yes
+    toc_depth: '4'
+    df_print: paged
+geometry: margin=1in
+fontsize: 11pt
+spacing: single
+header-includes:
+- \usepackage{amsmath}
+- \usepackage{amssymb}
+- \usepackage{amsfonts}
+- \usepackage{amsthm}
+- \usepackage{fancyhdr}
+- \pagestyle{fancy}
+- \fancyhf{}
+- "\\rhead{DS 6339-- Data Visualization}"
+- \cfoot{\thepage}
+- \usepackage{algorithm}
+- \usepackage[noend]{algpseudocode}
+- "\\DeclareUnicodeCharacter{2212}{\\ensuremath{-}}"
+editor_options: 
+  chunk_output_type: inline
+---
+
+<!-- QUESTION ONE: WHAT --> 
+\noindent\rule{17.5cm}{0.8pt}
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r, echo=FALSE, include=FALSE, message=FALSE, warning=FALSE}
+# Load libraries
+#library(lubridate)
+library(tidyverse)
+library(dplyr)
+library(plotly)
+library(hrbrthemes)
+library(kableExtra)
+library(knitr)
+library(tinytex)
+library(tibble)
+library(ggrepel)
+library("reshape2")   
+```
+
+
+
+# Load data
+```{r Load data}
+# Load data 
+dat <- read.csv("serialdat.csv", header = T)
+```
+
+# Data
+
+The new data (serialdat.csv), contains information about gene variant transcriptions. There were three replications of the variant transcriptions and a final column where the three replications were averaged. The two categorial varialbes included are the SUMOver (which is classes of genes - S#V# format). Ignore the replication number that follows the S#V# groups (of which there are 6 groups). Try to visualize the distributions according to each group. You may also include visualizations across the replications to see if the transcription process introduced error overall.
+
+
+# Step 1: Inspect data, assess it for completeness, good formatting, and any errors
+## Inspect data
+```{r inspect data, echo=FALSE}
+
+head(dat) ; dim(dat)
+
+```
+
+## Remove the replication number that follows the S#V# groups
+```{r , message=FALSE}
+dat0 <- dat[-43,] %>% select(-X10.x.copies) %>% 
+                mutate(SUMOvar = sapply(str_split(SUMOvar,"-",),'[',1))
+
+head(dat0)
+```
+
+# Visualizing distribution
+
+# Overall distribution among each group using the average replications
+
+```{r}
+ggplot(dat0, aes(x= SUMOvar, y=Average.Cq, color = SUMOvar)) +
+      geom_boxplot()+
+     theme_classic() +
+    ggtitle("Daily COVID-19 Patients Hospitalization Per Million")+
+     theme(legend.position = "none")
+```
+Here see that, the gene class S2V1 has more variability than all of the other classes. And more than half of its average replications lies below 19. The highest median average replication appears under the gene class S1V1. It has a median average replication of 24.
+
+
+
+```{r}
+dat_reshape <- melt(dat0[,-5], id = "SUMOvar")
+
+colnames(dat_reshape) <- c("SUMOvar","variable", "Replications")
+```
+
+# Distributions by each group
+```{r, fig.width=10}
+
+ggplot(dat_reshape, aes(x=SUMOvar, y= Replications, fill = variable )) +
+            geom_boxplot() +
+            theme_classic() +
+            ggtitle("Daily COVID-19 Patients Hospitalization Per Million")+
+            theme(legend.position = "none")+
+            facet_wrap(~variable)
+
+           
+```
+We observe that under each replication, S2V1 has more variability than rest of the gene classes. And also, S1V1 has the highest median average replications in all the three replications. 
+
+
+
+
+
+
+
+
+
+
+
+
