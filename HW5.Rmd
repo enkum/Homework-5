@@ -96,7 +96,7 @@ head(dat0)
 ggplot(dat0, aes(x= SUMOvar, y=Average.Cq, color = SUMOvar)) +
       geom_boxplot()+
      theme_classic() +
-    ggtitle("Daily COVID-19 Patients Hospitalization Per Million")+
+    ggtitle("Distribution of Average Cq by Gene Classes")+
      theme(legend.position = "none")
 ```
 Here see that, the gene class S2V1 has more variability than all of the other classes. And more than half of its average replications lies below 19. The highest median average replication appears under the gene class S1V1. It has a median average replication of 24.
@@ -115,7 +115,7 @@ colnames(dat_reshape) <- c("SUMOvar","variable", "Replications")
 ggplot(dat_reshape, aes(x=SUMOvar, y= Replications, fill = variable )) +
             geom_boxplot() +
             theme_classic() +
-            ggtitle("Daily COVID-19 Patients Hospitalization Per Million")+
+            ggtitle("Distribution of 3 replications by Gene Classes")+
             theme(legend.position = "none")+
             facet_wrap(~variable)
 
